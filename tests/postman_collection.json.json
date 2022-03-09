@@ -1,0 +1,63 @@
+{
+  "info": {
+    "_postman_id": "f2593a2e-0825-49a7-883b-4a6eab7a7fa3",
+    "name": "New Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "New Request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "8adff752-a11a-42f3-a7a1-aee59069c29e",
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "",
+              "pm.test(\"Result size is not zero\", function () {",
+              "    pm.expect(jsonData.data).to.length.greaterThan(0);",
+              "});",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "_postman_id": "4d0a7451-29bd-4c38-a0d2-097ed3338507",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://datausa.io/api/data?drilldowns=Nation&measures=Population",
+          "protocol": "https",
+          "host": [
+            "datausa",
+            "io"
+          ],
+          "path": [
+            "api",
+            "data"
+          ],
+          "query": [
+            {
+              "key": "drilldowns",
+              "value": "Nation"
+            },
+            {
+              "key": "measures",
+              "value": "Population"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
