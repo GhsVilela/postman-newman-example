@@ -24,7 +24,7 @@ jobs:
 
       - name: Run POSTMAN collection
         run: |
-          newman run ./tests/postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme
+          newman run ./tests/postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme; pwd; ls
 
 
       - name: Output the run Details Sort
