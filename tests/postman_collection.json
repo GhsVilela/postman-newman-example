@@ -1,0 +1,570 @@
+{
+	"info": {
+		"_postman_id": "b5c9b608-7313-4ace-9884-8188c226937d",
+		"name": "SMB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "First Purchase BR",
+			"item": [
+				{
+					"name": "Request calculations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.globals.set(\"signed_payload\", jsonData.calculations[0].signed_payload);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uuid = require('uuid');",
+									"const moment = require('moment');",
+									"var clientId = uuid.v4();",
+									"pm.globals.set(\"billing_email\", \"ext.invillia.gustavo.vilela+\" + moment().unix() + \"@gympass.com\");",
+									"pm.globals.set(\"client_id\", clientId);",
+									"pm.globals.set(\"source_transaction_id\", uuid.v4());",
+									"pm.globals.set(\"waiver_start_date\", moment());",
+									"pm.globals.set(\"waiver_end_date\", moment().add(1, 'year'));",
+									"console.log(\"Generated clientId: \" + clientId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnQtYmlsbGluZyIsImp0aSI6IjU3OWNjZTg0LWYzMDctNDQyZS04NDFhLTRkOTg1MTUzMzI5MyIsImlhdCI6MTYwNDQyNDAwMX0.JVWurXSBhrgnXqZr-BPn1nzyU_4zXTeCmk5Tx61oUWk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"source_transaction_id\": \"{{source_transaction_id}}\",\n    \"client\": {\n        \"country_id\": \"BR\",\n        \"currency_id\": \"BRL\",\n        \"payment_method\": \"CREDIT_CARD\",\n        \"legal_name\": \"SMB Company LTDA\",\n        \"trade_name\": \"SMB Company\",\n        \"emission_type\": null,\n        \"billing_email\": \"{{billing_email}}\"\n    },\n    \"orders\": [\n        {\n            \"fee_items\": {\n                \"one_time_fees\": [],\n                \"recurring_fees\": [\n                    {\n                        \"billing_day\": null,\n                        \"billing_period\": null,\n                        \"currency_id\": \"BRL\",\n                        \"cutoff_day\": null,\n                        \"discount_price_ceiling\": null,\n                        \"discount_price_floor\": null,\n                        \"discount_price_unit_decrease\": null,\n                        \"fee_price_type\": \"FLAT_PRICE_ELIGIBLE\",\n                        \"fee_type\": \"ENTERPRISE_SUBSCRIPTION\",\n                        \"flat_baseline_adjustment_flag\": null,\n                        \"flat_baseline_quantity\": 10,\n                        \"flat_discount_percentage\": null,\n                        \"flat_total_price\": null,\n                        \"flat_unit_price\": 55.05,\n                        \"inflation_adjustment_period\": null,\n                        \"inflation_adjustment_type\": null,\n                        \"payment_due_days\": null,\n                        \"payments\": [\n                            {\n                                \"client_id\": \"{{client_id}}\",\n                                \"split_bill_percentage\": 100,\n                                \"waivers\": [\n                                    {\n                                        \"begin_date\": \"{{waiver_start_date}}\",\n                                        \"end_date\": \"{{waiver_end_date}}\",\n                                        \"waived_percentage\": 60\n                                    }\n                                ]\n                            }\n                        ],\n                        \"variable_price_ceiling\": null,\n                        \"variable_price_floor\": null,\n                        \"variable_price_unit_increase\": null\n                    }\n                ]\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://client-billing-rules.us.stg.gympass.cloud/calculations",
+							"protocol": "http",
+							"host": [
+								"client-billing-rules",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"calculations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request checkout",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const moment = require('moment');",
+									"pm.globals.set(\"request_date\", moment());",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"setTimeout(function(){}, 2000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"signed_payload\": \"{{signed_payload}}\",\n    \"source\": \"TAGUS_SMB_CLIENT\",\n    \"request_date\": \"{{request_date}}\",\n    \"payment_method\": {\n        \"payment_method_type\": \"CREDIT_CARD\",\n        \"encrypted_card_data\": \"ybqwhkf/qd0rmpnL0XVPNnUoPc8n8xJKjCi/1VZjYPS0FRFc+uva9KHLjambsOc1FOlHc3k8HjoUv+3Ap4P1pI1/ut6LjeE41VMLoyNHnpXd8xJ781ji9bpUGFnYfcCmu4v9vha0WSFXRFxDc0n3ufPwQn3bFInZNNmW48bgK44jzDd6JoWaUGXnYtQH6lneNnLGAD6yONg0JpDrN/zD3PqGnbte60QckONKfwqyKroyRcCniUjTD5S0v6n/E9xnXkwWiz9bdGwnySJErD6WQlgbH5pgDZJczC+QlqSxObsGR/tXL2gfjqggo6i04AEJRzn9UjuiWlUC/0FxWwmjqg==\",\n        \"account_holder\": \"John Doe\",\n        \"card_display\": \"************1234\",\n        \"expiry_month\": \"12\",\n        \"expiry_year\": \"2022\",\n        \"card_validate_date\": \"John Doe\",\n        \"brand\": \"VISA\"\n    },\n    \"additional_info\": {\n        \"current_ip\": \"192.168.0.1\",\n        \"person_name\": \"JOHN TEST\",\n        \"person_email\": \"john@test.com\",\n        \"person_cart_id\": 67890,\n        \"company_id\": 54321\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://pci-checkout-service.us.stg.gympass.cloud/api/checkout",
+							"protocol": "https",
+							"host": [
+								"pci-checkout-service",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"api",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoices",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Result size is 1\", function () {",
+									"    pm.expect(jsonData.results).to.length(1);",
+									"});",
+									"",
+									"pm.test(\"PaymentStatus is PAID\", function () {",
+									"    pm.expect(jsonData.results[0].payment_status).to.contains(\"PAID\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://invoice-service.us.stg.gympass.cloud/invoices?client_ids={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"invoice-service",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "client_ids",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "First Purchase UK",
+			"item": [
+				{
+					"name": "Request calculations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.globals.set(\"signed_payload\", jsonData.calculations[0].signed_payload);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uuid = require('uuid');",
+									"const moment = require('moment');",
+									"var clientId = uuid.v4();",
+									"pm.globals.set(\"billing_email\", \"ext.invillia.gustavo.vilela+\" + moment().unix() + \"@gympass.com\");",
+									"pm.globals.set(\"client_id\", clientId);",
+									"pm.globals.set(\"source_transaction_id\", uuid.v4());",
+									"pm.globals.set(\"waiver_start_date\", moment());",
+									"pm.globals.set(\"waiver_end_date\", moment().add(1, 'year'));",
+									"console.log(\"Generated clientId: \" + clientId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnQtYmlsbGluZyIsImp0aSI6IjU3OWNjZTg0LWYzMDctNDQyZS04NDFhLTRkOTg1MTUzMzI5MyIsImlhdCI6MTYwNDQyNDAwMX0.JVWurXSBhrgnXqZr-BPn1nzyU_4zXTeCmk5Tx61oUWk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"source_transaction_id\": \"{{source_transaction_id}}\",\n    \"client\": {\n        \"country_id\": \"GB\",\n        \"currency_id\": \"GBP\",\n        \"payment_method\": \"CREDIT_CARD\",\n        \"legal_name\": \"SMB Company LTDA\",\n        \"trade_name\": \"SMB Company\",\n        \"emission_type\": null,\n        \"billing_email\": \"{{billing_email}}\"\n    },\n    \"orders\": [\n        {\n            \"fee_items\": {\n                \"one_time_fees\": [],\n                \"recurring_fees\": [\n                    {\n                        \"billing_day\": null,\n                        \"billing_period\": null,\n                        \"currency_id\": \"GBP\",\n                        \"cutoff_day\": null,\n                        \"discount_price_ceiling\": null,\n                        \"discount_price_floor\": null,\n                        \"discount_price_unit_decrease\": null,\n                        \"fee_price_type\": \"FLAT_PRICE_ELIGIBLE\",\n                        \"fee_type\": \"ENTERPRISE_SUBSCRIPTION\",\n                        \"flat_baseline_adjustment_flag\": null,\n                        \"flat_baseline_quantity\": 10,\n                        \"flat_discount_percentage\": null,\n                        \"flat_total_price\": null,\n                        \"flat_unit_price\": 55.05,\n                        \"inflation_adjustment_period\": null,\n                        \"inflation_adjustment_type\": null,\n                        \"payment_due_days\": null,\n                        \"payments\": [\n                            {\n                                \"client_id\": \"{{client_id}}\",\n                                \"split_bill_percentage\": 100,\n                                \"waivers\": [\n                                    {\n                                        \"begin_date\": \"{{waiver_start_date}}\",\n                                        \"end_date\": \"{{waiver_end_date}}\",\n                                        \"waived_percentage\": 60\n                                    }\n                                ]\n                            }\n                        ],\n                        \"variable_price_ceiling\": null,\n                        \"variable_price_floor\": null,\n                        \"variable_price_unit_increase\": null\n                    }\n                ]\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://client-billing-rules.us.stg.gympass.cloud/calculations",
+							"protocol": "http",
+							"host": [
+								"client-billing-rules",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"calculations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request checkout",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const moment = require('moment');",
+									"pm.globals.set(\"request_date\", moment());",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"setTimeout(function(){}, 2000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"signed_payload\": \"{{signed_payload}}\",\n    \"source\": \"TAGUS_SMB_CLIENT\",\n    \"request_date\": \"{{request_date}}\",\n    \"payment_method\": {\n        \"payment_method_type\": \"CREDIT_CARD\",\n        \"encrypted_card_data\": \"ybqwhkf/qd0rmpnL0XVPNnUoPc8n8xJKjCi/1VZjYPS0FRFc+uva9KHLjambsOc1FOlHc3k8HjoUv+3Ap4P1pI1/ut6LjeE41VMLoyNHnpXd8xJ781ji9bpUGFnYfcCmu4v9vha0WSFXRFxDc0n3ufPwQn3bFInZNNmW48bgK44jzDd6JoWaUGXnYtQH6lneNnLGAD6yONg0JpDrN/zD3PqGnbte60QckONKfwqyKroyRcCniUjTD5S0v6n/E9xnXkwWiz9bdGwnySJErD6WQlgbH5pgDZJczC+QlqSxObsGR/tXL2gfjqggo6i04AEJRzn9UjuiWlUC/0FxWwmjqg==\",\n        \"account_holder\": \"John Doe\",\n        \"card_display\": \"************1234\",\n        \"expiry_month\": \"12\",\n        \"expiry_year\": \"2022\",\n        \"card_validate_date\": \"John Doe\",\n        \"brand\": \"VISA\"\n    },\n    \"additional_info\": {\n        \"current_ip\": \"192.168.0.1\",\n        \"person_name\": \"JOHN TEST\",\n        \"person_email\": \"john@test.com\",\n        \"person_cart_id\": 67890,\n        \"company_id\": 54321\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://pci-checkout-service.us.stg.gympass.cloud/api/checkout",
+							"protocol": "https",
+							"host": [
+								"pci-checkout-service",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"api",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoices",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Result size is 1\", function () {",
+									"    pm.expect(jsonData.results).to.length(1);",
+									"});",
+									"",
+									"pm.test(\"PaymentStatus is PENDING\", function () {",
+									"    pm.expect(jsonData.results[0].payment_status).to.contains(\"PENDING\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://invoice-service.us.stg.gympass.cloud/invoices?client_ids={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"invoice-service",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "client_ids",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "First Purchase Waiver 100%",
+			"item": [
+				{
+					"name": "Request calculations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.globals.set(\"signed_payload\", jsonData.calculations[0].signed_payload);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uuid = require('uuid');",
+									"const moment = require('moment');",
+									"var clientId = uuid.v4();",
+									"pm.globals.set(\"billing_email\", \"ext.invillia.gustavo.vilela+\" + moment().unix() + \"@gympass.com\");",
+									"pm.globals.set(\"client_id\", clientId);",
+									"pm.globals.set(\"source_transaction_id\", uuid.v4());",
+									"pm.globals.set(\"waiver_start_date\", moment());",
+									"pm.globals.set(\"waiver_end_date\", moment().add(1, 'year'));",
+									"console.log(\"Generated clientId: \" + clientId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnQtYmlsbGluZyIsImp0aSI6IjU3OWNjZTg0LWYzMDctNDQyZS04NDFhLTRkOTg1MTUzMzI5MyIsImlhdCI6MTYwNDQyNDAwMX0.JVWurXSBhrgnXqZr-BPn1nzyU_4zXTeCmk5Tx61oUWk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"source_transaction_id\": \"{{source_transaction_id}}\",\n    \"client\": {\n        \"country_id\": \"BR\",\n        \"currency_id\": \"BRL\",\n        \"payment_method\": \"CREDIT_CARD\",\n        \"legal_name\": \"SMB Company LTDA\",\n        \"trade_name\": \"SMB Company\",\n        \"emission_type\": null,\n        \"billing_email\": \"{{billing_email}}\"\n    },\n    \"orders\": [\n        {\n            \"fee_items\": {\n                \"one_time_fees\": [],\n                \"recurring_fees\": [\n                    {\n                        \"billing_day\": null,\n                        \"billing_period\": null,\n                        \"currency_id\": \"USD\",\n                        \"cutoff_day\": null,\n                        \"discount_price_ceiling\": null,\n                        \"discount_price_floor\": null,\n                        \"discount_price_unit_decrease\": null,\n                        \"fee_price_type\": \"FLAT_PRICE_ELIGIBLE\",\n                        \"fee_type\": \"ENTERPRISE_SUBSCRIPTION\",\n                        \"flat_baseline_adjustment_flag\": null,\n                        \"flat_baseline_quantity\": 10,\n                        \"flat_discount_percentage\": null,\n                        \"flat_total_price\": null,\n                        \"flat_unit_price\": 55.05,\n                        \"inflation_adjustment_period\": null,\n                        \"inflation_adjustment_type\": null,\n                        \"payment_due_days\": null,\n                        \"payments\": [\n                            {\n                                \"client_id\": \"{{client_id}}\",\n                                \"split_bill_percentage\": 100,\n                                \"waivers\": [\n                                    {\n                                        \"begin_date\": \"{{waiver_start_date}}\",\n                                        \"end_date\": \"{{waiver_end_date}}\",\n                                        \"waived_percentage\": 100\n                                    }\n                                ]\n                            }\n                        ],\n                        \"variable_price_ceiling\": null,\n                        \"variable_price_floor\": null,\n                        \"variable_price_unit_increase\": null\n                    }\n                ]\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://client-billing-rules.us.stg.gympass.cloud/calculations",
+							"protocol": "http",
+							"host": [
+								"client-billing-rules",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"calculations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request checkout",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const moment = require('moment');",
+									"pm.globals.set(\"request_date\", moment());",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"setTimeout(function(){}, 2000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"signed_payload\": \"{{signed_payload}}\",\n    \"source\": \"TAGUS_SMB_CLIENT\",\n    \"request_date\": \"{{request_date}}\",\n    \"payment_method\": {\n        \"payment_method_type\": \"CREDIT_CARD\",\n        \"encrypted_card_data\": \"ybqwhkf/qd0rmpnL0XVPNnUoPc8n8xJKjCi/1VZjYPS0FRFc+uva9KHLjambsOc1FOlHc3k8HjoUv+3Ap4P1pI1/ut6LjeE41VMLoyNHnpXd8xJ781ji9bpUGFnYfcCmu4v9vha0WSFXRFxDc0n3ufPwQn3bFInZNNmW48bgK44jzDd6JoWaUGXnYtQH6lneNnLGAD6yONg0JpDrN/zD3PqGnbte60QckONKfwqyKroyRcCniUjTD5S0v6n/E9xnXkwWiz9bdGwnySJErD6WQlgbH5pgDZJczC+QlqSxObsGR/tXL2gfjqggo6i04AEJRzn9UjuiWlUC/0FxWwmjqg==\",\n        \"account_holder\": \"John Doe\",\n        \"card_display\": \"************1234\",\n        \"expiry_month\": \"12\",\n        \"expiry_year\": \"2022\",\n        \"card_validate_date\": \"John Doe\",\n        \"brand\": \"VISA\"\n    },\n    \"additional_info\": {\n        \"current_ip\": \"192.168.0.1\",\n        \"person_name\": \"JOHN TEST\",\n        \"person_email\": \"john@test.com\",\n        \"person_cart_id\": 67890,\n        \"company_id\": 54321\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://pci-checkout-service.us.stg.gympass.cloud/api/checkout",
+							"protocol": "https",
+							"host": [
+								"pci-checkout-service",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"api",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoices",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Result size is 1\", function () {",
+									"    pm.expect(jsonData.results).to.length(1);",
+									"});",
+									"",
+									"pm.test(\"PaymentStatus is COSTLESS\", function () {",
+									"    pm.expect(jsonData.results[0].payment_status).to.contains(\"COSTLESS\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://invoice-service.us.stg.gympass.cloud/invoices?client_ids={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"invoice-service",
+								"us",
+								"stg",
+								"gympass",
+								"cloud"
+							],
+							"path": [
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "client_ids",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
