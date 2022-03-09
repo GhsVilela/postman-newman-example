@@ -26,7 +26,6 @@ jobs:
         run: |
           newman run ./tests/postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme > testResults/runreport1.html
 
-
       - name: Output the run Details Sort
         run: 'env | grep GITHUB_ | sort > testResults/runreport1.html'
 
