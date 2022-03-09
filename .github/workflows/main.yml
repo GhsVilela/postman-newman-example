@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: RunReports
-          path: ./testResults
+          path: /home/runner/work/postman-newman-example/postman-newman-example/testResults
