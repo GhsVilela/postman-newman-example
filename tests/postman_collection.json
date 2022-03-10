@@ -15,16 +15,8 @@
             "exec": [
               "var jsonData = pm.response.json();",
               "",
-              "pm.test(\"Result size is not zero\", function () {",
+              "pm.test(\"Result size is greater than zero\", function () {",
               "    pm.expect(jsonData.data).to.length.greaterThan(0);",
-              "});",
-              "",
-              "pm.test(\"Status code is 200\", function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "",
-              "pm.test(\"Status code is testeeeee\", function () {",
-              "    pm.response.to.have.status(200);",
               "});",
               ""
             ],
@@ -32,7 +24,7 @@
           }
         }
       ],
-      "_postman_id": "4d0a7451-29bd-4c38-a0d2-097ed3338507",
+      "id": "4d0a7451-29bd-4c38-a0d2-097ed3338507",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
       },
