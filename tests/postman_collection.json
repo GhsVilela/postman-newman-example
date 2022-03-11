@@ -18,6 +18,10 @@
               "pm.test(\"Result size is greater than zero\", function () {",
               "    pm.expect(jsonData.data).to.length.greaterThan(0);",
               "});",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
               ""
             ],
             "type": "text/javascript"
