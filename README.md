@@ -20,7 +20,7 @@ npm install -g newman-reporter-htmlextra
 newman run tests/postman_collection.json
 ```
 
-#### Running with HTML Reporter
+## Running with HTML Reporter
 
 ```bash
 newman run tests/postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme
