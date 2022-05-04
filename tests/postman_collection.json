@@ -1,64 +1,54 @@
 {
-  "info": {
-    "_postman_id": "f2593a2e-0825-49a7-883b-4a6eab7a7fa3",
-    "name": "POC",
-    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Get Request",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "id": "8adff752-a11a-42f3-a7a1-aee59069c29e",
-            "exec": [
-              "var jsonData = pm.response.json();",
-              "",
-              "pm.test(\"Status code is 200\", function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "",
-              "pm.test(\"Result size is greater than zero\", function () {",
-              "    pm.expect(jsonData.data).to.length.greaterThan(0);",
-              "});",
-              ""
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "id": "4d0a7451-29bd-4c38-a0d2-097ed3338507",
-      "protocolProfileBehavior": {
-        "disableBodyPruning": true
-      },
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "https://datausa.io/api/data?drilldowns=Nation&measures=Population",
-          "protocol": "https",
-          "host": [
-            "datausa",
-            "io"
-          ],
-          "path": [
-            "api",
-            "data"
-          ],
-          "query": [
-            {
-              "key": "drilldowns",
-              "value": "Nation"
-            },
-            {
-              "key": "measures",
-              "value": "Population"
-            }
-          ]
-        }
-      },
-      "response": []
-    }
-  ]
+	"info": {
+		"_postman_id": "cf67a000-b802-40dd-9cea-3d14571d7866",
+		"name": "POC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Result size is 1\", function () {",
+							"    pm.expect(jsonData.results).to.length(1);",
+							"});",
+							"",
+							"pm.test(\"User status is ACTIVE\", function () {",
+							"    pm.expect(jsonData.results[0].status).to.equals(\"ACTIVE\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://d26923e2-0412-48b9-8a71-564cdc1947c3.mock.pstmn.io/users",
+					"protocol": "https",
+					"host": [
+						"d26923e2-0412-48b9-8a71-564cdc1947c3",
+						"mock",
+						"pstmn",
+						"io"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	]
 }
