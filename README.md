@@ -1,5 +1,7 @@
 ## Newman Installation
 
+[![test](https://github.com/GhsVilela/postman-newman-example/actions/workflows/main.yml/badge.svg)](https://github.com/GhsVilela/postman-newman-example/actions/workflows/main.yml)
+
 Use the package manager [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) to install newman.
 
 ```bash
